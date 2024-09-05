@@ -108,18 +108,11 @@ export function BalanceWithCarryover({
 
   return (
     <CellValue binding={balance} type="financial" {...props}>
-      {({ type, name, value: balanceValue }) =>
-        children ? (
-          children({ type, name, value: balanceValue })
-        ) : (
-          <span
-            style={{
-              alignItems: 'center',
-              display: 'inline-flex',
-              justifyContent: 'right',
-              maxWidth: '100%',
-            }}
-          >
+      {({ type, name, value: balanceValue }) => (
+        <>
+          {children ? (
+            children({ type, name, value: balanceValue })
+          ) : (
             <Tooltip
               content={
                 <View style={{ padding: 10 }}>
@@ -186,12 +179,12 @@ export function BalanceWithCarryover({
                 })}
               />
             </Tooltip>
-            {carryoverValue && (
-              <CarryoverIndicator style={getBalanceStyle(balanceValue)} />
-            )}
-          </span>
-        )
-      }
+          )}
+          {carryoverValue && (
+            <CarryoverIndicator style={getBalanceStyle(balanceValue)} />
+          )}
+        </>
+      )}
     </CellValue>
   );
 }
