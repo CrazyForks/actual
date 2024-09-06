@@ -11,7 +11,7 @@ import { type CSSProperties, theme, styles } from '../../style';
 import { Tooltip } from '../common/Tooltip';
 import { View } from '../common/View';
 import { type Binding } from '../spreadsheet';
-import { CellValue, DefaultCellValueText } from '../spreadsheet/CellValue';
+import { CellValue, CellValueText } from '../spreadsheet/CellValue';
 import { useFormat } from '../spreadsheet/useFormat';
 import { useSheetValue } from '../spreadsheet/useSheetValue';
 
@@ -21,7 +21,7 @@ type CarryoverIndicatorProps = {
   style?: CSSProperties;
 };
 
-export function DefaultCarryoverIndicator({ style }: CarryoverIndicatorProps) {
+export function CarryoverIndicator({ style }: CarryoverIndicatorProps) {
   return (
     <View
       style={{
@@ -78,7 +78,7 @@ export function BalanceWithCarryover({
   budgeted,
   longGoal,
   disabled,
-  CarryoverIndicator = DefaultCarryoverIndicator,
+  CarryoverIndicator: CarryoverIndicatorComponent = CarryoverIndicator,
   children,
   ...props
 }: BalanceWithCarryoverProps) {
@@ -163,7 +163,7 @@ export function BalanceWithCarryover({
                 isDisabled: !isGoalTemplatesEnabled || goalValue == null,
               }}
             >
-              <DefaultCellValueText
+              <CellValueText
                 type={type}
                 name={name}
                 value={balanceValue}
@@ -181,7 +181,9 @@ export function BalanceWithCarryover({
             </Tooltip>
           )}
           {carryoverValue && (
-            <CarryoverIndicator style={getBalanceStyle(balanceValue)} />
+            <CarryoverIndicatorComponent
+              style={getBalanceStyle(balanceValue)}
+            />
           )}
         </>
       )}

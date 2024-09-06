@@ -17,7 +17,7 @@ import { Text } from '../../common/Text';
 import { TextOneLine } from '../../common/TextOneLine';
 import { View } from '../../common/View';
 import { MobilePageHeader, Page } from '../../Page';
-import { CellValue, DefaultCellValueText } from '../../spreadsheet/CellValue';
+import { CellValue, CellValueText } from '../../spreadsheet/CellValue';
 import { MOBILE_NAV_HEIGHT } from '../MobileNavTabs';
 import { PullToRefresh } from '../PullToRefresh';
 
@@ -47,10 +47,7 @@ function AccountHeader({ name, amount, style = {} }) {
       </View>
       <CellValue binding={amount} type="financial">
         {props => (
-          <DefaultCellValueText
-            {...props}
-            style={{ ...styles.text, fontSize: 14 }}
-          />
+          <CellValueText {...props} style={{ ...styles.text, fontSize: 14 }} />
         )}
       </CellValue>
     </View>
@@ -138,7 +135,7 @@ function AccountCard({
         </View>
         <CellValue binding={getBalanceQuery(account)} type="financial">
           {props => (
-            <DefaultCellValueText
+            <CellValueText
               {...props}
               style={{
                 fontSize: 16,
