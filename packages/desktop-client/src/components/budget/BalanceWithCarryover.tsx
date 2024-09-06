@@ -167,8 +167,8 @@ export function BalanceWithCarryover({
                 type={type}
                 name={name}
                 value={balanceValue}
-                getStyle={value => ({
-                  ...getBalanceStyle(value),
+                style={{
+                  ...getBalanceStyle(balanceValue),
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
                   textAlign: 'right',
@@ -176,7 +176,7 @@ export function BalanceWithCarryover({
                     cursor: 'pointer',
                   }),
                   ':hover': { textDecoration: 'underline' },
-                })}
+                }}
               />
             </Tooltip>
           )}

@@ -49,7 +49,7 @@ function AccountHeader({ name, amount, style = {} }) {
         {props => (
           <DefaultCellValueText
             {...props}
-            getStyle={() => ({ ...styles.text, fontSize: 14 })}
+            style={{ ...styles.text, fontSize: 14 }}
           />
         )}
       </CellValue>
@@ -140,11 +140,11 @@ function AccountCard({
           {props => (
             <DefaultCellValueText
               {...props}
-              getStyle={value => ({
+              style={{
                 fontSize: 16,
                 color: 'inherit',
-                ...makeAmountFullStyle(value),
-              })}
+                ...makeAmountFullStyle(props.value),
+              }}
               data-testid="account-balance"
             />
           )}
