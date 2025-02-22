@@ -4,12 +4,12 @@ import * as bcrypt from 'bcrypt';
 
 import { bootstrapOpenId } from './accounts/openid.js';
 import { bootstrapPassword, loginWithPassword } from './accounts/password.js';
-import openDatabase from './db.js';
-import config from './load-config.js';
+import { openDatabase } from './db.js';
+import { config } from './load-config.js';
 
 let _accountDb;
 
-export default function getAccountDb() {
+export function getAccountDb() {
   if (_accountDb === undefined) {
     const dbPath = join(config.serverFiles, 'account.sqlite');
     _accountDb = openDatabase(dbPath);
@@ -27,11 +27,15 @@ export function needsBootstrap() {
 export function listLoginMethods() {
   const accountDb = getAccountDb();
   const rows = accountDb.all('SELECT method, display_name, active FROM auth');
-  return rows.map(r => ({
-    method: r.method,
-    active: r.active,
-    displayName: r.display_name,
-  }));
+  return rows
+    .filter(f =>
+      rows.length > 1 && config.enforceOpenId ? f.method === 'openid' : true,
+    )
+    .map(r => ({
+      method: r.method,
+      active: r.active,
+      displayName: r.display_name,
+    }));
 }
 
 export function getActiveLoginMethod() {
@@ -179,10 +183,10 @@ export async function disableOpenID(loginSettings) {
     accountDb.transaction(() => {
       accountDb.mutate('DELETE FROM sessions');
       accountDb.mutate(
-        `DELETE FROM user_access 
+        `DELETE FROM user_access
                               WHERE user_access.user_id IN (
-                                  SELECT users.id 
-                                  FROM users 
+                                  SELECT users.id
+                                  FROM users
                                   WHERE users.user_name <> ?
                               );`,
         [''],
