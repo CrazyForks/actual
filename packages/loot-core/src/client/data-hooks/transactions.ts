@@ -26,6 +26,10 @@ import { type PagedQuery, pagedQuery } from '../query-helpers';
 import { type ScheduleStatuses, useCachedSchedules } from './schedules';
 
 type UseTransactionsProps = {
+  /**
+   * The Query class is immutable so it is important to memoize the query object
+   * to prevent unnecessary re-renders i.e. `useMemo`, `useState`, etc.
+   */
   query?: Query;
   options?: {
     pageCount?: number;
@@ -91,7 +95,9 @@ export function useTransactions({
         }
       },
       onError,
-      options: { pageCount: optionsRef.current.pageCount },
+      options: optionsRef.current.pageCount
+        ? { pageCount: optionsRef.current.pageCount }
+        : {},
     });
 
     return () => {
@@ -122,7 +128,7 @@ export function useTransactions({
   return {
     transactions,
     isLoading,
-    error,
+    ...(error && { error }),
     reload,
     loadMore,
     isLoadingMore,
@@ -222,7 +228,9 @@ export function usePreviewTransactions(): UsePreviewTransactionsResult {
       })
       .flat()
       .sort(
-        (a, b) => parseDate(b.date).getTime() - parseDate(a.date).getTime(),
+        (a, b) =>
+          parseDate(b.date).getTime() - parseDate(a.date).getTime() ||
+          a.amount - b.amount,
       );
   }, [isSchedulesLoading, schedules, statuses, upcomingLength]);
 
@@ -274,10 +282,11 @@ export function usePreviewTransactions(): UsePreviewTransactionsResult {
     };
   }, [scheduleTransactions, schedules, statuses, upcomingLength]);
 
+  const returnError = error || scheduleQueryError;
   return {
     data: previewTransactions,
     isLoading: isLoading || isSchedulesLoading,
-    error: error || scheduleQueryError,
+    ...(returnError && { error: returnError }),
   };
 }
 
@@ -308,6 +317,7 @@ export function useTransactionsSearch({
           resetQuery();
           setIsSearching(false);
         } else if (searchText) {
+          resetQuery();
           updateQuery(previousQuery =>
             queries.transactionsSearch(previousQuery, searchText, dateFormat),
           );

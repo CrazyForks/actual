@@ -77,7 +77,7 @@ app.post(
       return;
     }
 
-    if (Array.isArray(accountId) != Array.isArray(startDate)) {
+    if (Array.isArray(accountId) !== Array.isArray(startDate)) {
       console.log({ accountId, startDate });
       throw new Error(
         'accountId and startDate must either both be arrays or both be strings',
@@ -205,7 +205,7 @@ function getAccountResponse(results, accountId, startDate) {
 
     let dateToUse = 0;
 
-    if (trans.pending ?? trans.posted == 0) {
+    if (trans.pending ?? trans.posted === 0) {
       newTrans.booked = false;
       dateToUse = trans.transacted_at;
     } else {
@@ -222,10 +222,18 @@ function getAccountResponse(results, accountId, startDate) {
     newTrans.sortOrder = dateToUse;
     newTrans.date = getDate(transactionDate);
     newTrans.payeeName = trans.payee;
-    newTrans.remittanceInformationUnstructured = trans.description;
+    newTrans.notes = trans.description;
     newTrans.transactionAmount = { amount: trans.amount, currency: 'USD' };
     newTrans.transactionId = trans.id;
     newTrans.valueDate = newTrans.bookingDate;
+
+    if (trans.transacted_at) {
+      newTrans.transactedDate = getDate(new Date(trans.transacted_at * 1000));
+    }
+
+    if (trans.posted) {
+      newTrans.postedDate = getDate(new Date(trans.posted * 1000));
+    }
 
     if (newTrans.booked) {
       booked.push(newTrans);
