@@ -249,9 +249,12 @@ export function updateTransaction(
 
         let child = t;
         if (trans.id === transaction.id) {
+          const { payee: childPayee, ...rest } = t;
+          const newPayee =
+            childPayee === trans.payee ? transaction.payee : childPayee;
           child = {
-            ...t,
-            payee: t.payee === trans.payee ? transaction.payee : t.payee,
+            ...rest,
+            ...(newPayee != null ? { payee: newPayee } : {}),
           };
         } else if (t.id === transaction.id) {
           child = transaction;
@@ -260,7 +263,10 @@ export function updateTransaction(
         return makeChild(parent, child);
       });
 
-      return recalculateSplit({ ...parent, subtransactions: sub });
+      return recalculateSplit({
+        ...parent,
+        ...(sub && { subtransactions: sub }),
+      });
     } else {
       return transaction;
     }
@@ -276,14 +282,18 @@ export function deleteTransaction(
       if (trans.id === id) {
         return null;
       } else if (trans.subtransactions?.length === 1) {
-        const { error, subtransactions, ...rest } = trans;
+        const { subtransactions, ...rest } = trans;
         return {
           ...rest,
           is_parent: false,
+          error: null,
         } satisfies TransactionEntity;
       } else {
         const sub = trans.subtransactions?.filter(t => t.id !== id);
-        return recalculateSplit({ ...trans, subtransactions: sub });
+        return recalculateSplit({
+          ...trans,
+          ...(sub && { subtransactions: sub }),
+        });
       }
     } else {
       return null;
